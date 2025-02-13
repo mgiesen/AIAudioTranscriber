@@ -11,7 +11,15 @@ Die effiziente Dokumentation von Gesprächen, Vorträgen und Meetings ist in vie
 
 ## Entwicklungsstrategie
 
+### Scope
+
 Aktuell kann ich nur wenige Stunden pro Woche an dem Projekt arbeiten. Entsprechend habe ich einen überschaubaren Scope für einen MVP definiert. Viele weitere spannende Funktionen und Features wären vorstellbar, werden aus Kapazitätsgründen jedoch vorerst hintenangestellt.
+
+## Verwendete Technoloigien
+
+Aus persönlicher Erfahrung habe ich sehr gute Erfahrung mit dem `Whisper` Modell von OpenAI zur Spracherkennung gemacht. Je nach verfügbarer Hardware, empfehle ich die Verwendung des `Large` Modells.
+
+Bezüglich des eingesetzten LLMs bin ich selbst noch in der Findungsphase. Zum Prototyping setze ich aufgrund der großen Kontextlänge vorerst auf `llama3.2`. Die Ergebnisse sind nicht optimal, lassen sich aber zukünftig durch einen Tausch des Modells einfach optimieren.
 
 ## Ablauf
 

@@ -5,15 +5,15 @@ class TranscriptionBusy(Exception):
 
 _is_busy = False
 
+# Läd das Whisper-Modell in den Speicher
 def load_model(model_size: str = "base"):
-    """Lädt das Whisper-Modell."""
     try:
         return whisper.load_model(model_size)
     except Exception as e:
         raise Exception(f"Fehler beim Laden des Models: {e}")
 
+# Transkribiert eine Audiodatei mit dem gegebenen Whisper-Modell.
 def transcribe_audio(model, audio_path: str):
-    """Transkribiert eine Audiodatei mit dem gegebenen Whisper-Modell."""
     global _is_busy
     
     if _is_busy:

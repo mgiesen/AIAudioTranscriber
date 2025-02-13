@@ -1,0 +1,21 @@
+services:
+  backend:
+    build: ./backend-api
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      - REST_PORT=3000
+      - WS_PORT=3001
+    restart: unless-stopped
+
+  frontend:
+    build: ./nginx
+    ports:
+      - "80:80"
+    environment:
+      - BACKEND_REST_URL=http://backend:3000
+      - BACKEND_WS_URL=ws://backend:3001
+    depends_on:
+      - backend
+    restart: unless-stopped

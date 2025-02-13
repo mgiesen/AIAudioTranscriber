@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="de">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>AI Audio Transcriber</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 800px;
+				margin: 20px auto;
+				padding: 0 20px;
+			}
+			.status {
+				padding: 10px;
+				margin: 10px 0;
+				border-radius: 4px;
+			}
+			.success {
+				background-color: #d4edda;
+			}
+			.error {
+				background-color: #f8d7da;
+			}
+			.connection {
+				background-color: #cce5ff;
+			}
+			#messages {
+				margin-top: 20px;
+				padding: 10px;
+				border: 1px solid #ddd;
+				min-height: 100px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>AIAudioTranscriber</h1>
+
+		<div>
+			<h3>REST API Test</h3>
+			<button onclick="testRestApi()">Test REST API</button>
+			<div id="restStatus" class="status"></div>
+		</div>
+
+		<div>
+			<h3>WebSocket Test</h3>
+			<button onclick="connectWebSocket()">Connect WebSocket</button>
+			<button onclick="disconnectWebSocket()">Disconnect WebSocket</button>
+			<div id="wsStatus" class="status"></div>
+		</div>
+
+		<div>
+			<h3>Messages</h3>
+			<div id="messages"></div>
+		</div>
+
+		<script>
+			// Konfiguration der Ports
+			const REST_PORT = 3000;
+			const WS_PORT = 3001;
+
+			const REST_URL = `http://localhost:${REST_PORT}/api`;
+			const WS_URL = `ws://localhost:${WS_PORT}`;
+
+			let ws = null;
+			const messagesDiv = document.getElementById("messages");
+			const wsStatus = document.getElementById("wsStatus");
+			const restStatus = document.getElementById("restStatus");
+
+			function logMessage(message) {
+				const messageElement = document.createElement("div");
+				messageElement.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+				messagesDiv.insertBefore(messageElement, messagesDiv.firstChild);
+			}
+
+			async function testRestApi() {
+				try {
+					restStatus.textContent = "Testing...";
+					restStatus.className = "status connection";
+
+					const response = await fetch(`${REST_URL}/test`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({ message: "Test Message" }),
+					});
+
+					const data = await response.json();
+					restStatus.textContent = `Success: ${JSON.stringify(data)}`;
+					restStatus.className = "status success";
+					logMessage(`REST API response: ${JSON.stringify(data)}`);
+				} catch (error) {
+					restStatus.textContent = `Error: ${error.message}`;
+					restStatus.className = "status error";
+					logMessage(`REST API error: ${error.message}`);
+				}
+			}
+
+			function connectWebSocket() {
+				if (ws) {
+					logMessage("WebSocket already connected");
+					return;
+				}
+
+				try {
+					ws = new WebSocket(WS_URL);
+
+					ws.onopen = () => {
+						wsStatus.textContent = "Connected";
+						wsStatus.className = "status success";
+						logMessage("WebSocket connected");
+					};
+
+					ws.onmessage = (event) => {
+						logMessage(`WebSocket message: ${event.data}`);
+					};
+
+					ws.onclose = () => {
+						wsStatus.textContent = "Disconnected";
+						wsStatus.className = "status error";
+						logMessage("WebSocket disconnected");
+						ws = null;
+					};
+
+					ws.onerror = (error) => {
+						wsStatus.textContent = `Error: ${error.message}`;
+						wsStatus.className = "status error";
+						logMessage(`WebSocket error: ${error.message}`);
+					};
+				} catch (error) {
+					wsStatus.textContent = `Connection Error: ${error.message}`;
+					wsStatus.className = "status error";
+					logMessage(`WebSocket connection error: ${error.message}`);
+				}
+			}
+
+			function disconnectWebSocket() {
+				if (ws) {
+					ws.close();
+					ws = null;
+					wsStatus.textContent = "Disconnected";
+					wsStatus.className = "status error";
+					logMessage("WebSocket disconnected by user");
+				}
+			}
+
+			// Initial Status
+			wsStatus.textContent = "Not Connected";
+			wsStatus.className = "status error";
+			restStatus.textContent = "Ready";
+			restStatus.className = "status";
+		</script>
+	</body>
+</html>
